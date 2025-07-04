@@ -7,7 +7,7 @@ import time as tmod
 # --- PATH SETTINGS ---
 current_dir = Path(__file__).parent if "__file__" in locals() else Path.cwd()
 #current_dir=r"https://github.com/pythodoc/Profile_pg/blob/main/"
-# css_file = current_dir / "styles" / "main.css"
+# css_file = current_dir / "main.css"
 css_file=current_dir+r"\styles\main.css"
 # resume_file = current_dir / "assets" / "CV.pdf"
 resume_file=current_dir+r"\assets\CV.pdf"
