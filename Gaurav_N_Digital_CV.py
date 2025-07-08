@@ -16,7 +16,7 @@ profile_pic = current_dir / "gaurav profile_pic1.PNG"
 
 # --- GENERAL SETTINGS ---
 PAGE_TITLE = "Digital CV | Gaurav Nazare"
-PAGE_ICON = ":wave:"
+PAGE_ICON = ":male-technologist:"
 NAME = "Gaurav Nazare"
 DESCRIPTION = """
 Junior Python Developer, assisting enterprises by supporting the organization's mission to build robust, 
