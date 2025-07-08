@@ -102,7 +102,7 @@ st.subheader("Work History")
 st.write("---")
 
 # --- JOB 1
-st.write("🚧", "**Jr. Python Developer | Silverstream Equitas Pvt Ltd**")
+st.write("🚧", "**Jr. Python Developer | Silverstream Equities Pvt Ltd**")
 st.write("09/2024 - Present")
 st.write(
     """
@@ -126,7 +126,7 @@ st.write(
 
 # --- JOB 2
 st.write('\n')
-st.write("🚧", "**Intern Python Developer | Silverstream Equitas Pvt Ltd**")
+st.write("🚧", "**Intern Python Developer | Silverstream Equities Pvt Ltd**")
 st.write("06/2024 - 09/2024")
 st.write(
     """
