@@ -21,7 +21,10 @@ hr {
     margin-top: 0px;
     margin-bottom: 5%;
 }
-
+body, .stApp {
+    background-color: #181818 !important;
+    color: #ffffff !important;
+}
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
