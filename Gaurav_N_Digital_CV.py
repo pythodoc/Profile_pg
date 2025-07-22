@@ -1,8 +1,15 @@
 from pathlib import Path
-
 import streamlit as st
 from PIL import Image
-import time as tmod
+import time
+
+if "last_rerun" not in st.session_state:
+    st.session_state.last_rerun = time.time()
+
+if time.time() - st.session_state.last_rerun > 60:
+    st.session_state.last_rerun = time.time()
+    st.experimental_rerun()
+
 
 # --- PATH SETTINGS ---
 current_dir = Path(__file__).parent if "__file__" in locals() else Path.cwd()
@@ -148,5 +155,3 @@ for project, link in PROJECTS.items():
         st.write(f"[{project}]({link})")
     else:
         st.write(f"{project} — {link}")
-tmod.sleep(60)
-st.rerun()
