@@ -10,6 +10,17 @@ a {
     font-weight: 500;
 }
 
+/* main.css */
+.stDownloadButton button {
+    background-color: #2563eb; /* blue */
+    color: #fff; /* white text */
+    font-weight: bold;
+    border-radius: 5px;
+}
+.stDownloadButton button:hover {
+    background-color: #1e40af; /* darker blue on hover */
+}
+
 a:hover {
     color: #d33682 !important;
     text-decoration: none;
