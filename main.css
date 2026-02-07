@@ -1,41 +1,139 @@
-@import url('https://fonts.googleapis.com/css2?family=Readex+Pro:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600;700;800&display=swap');
 
+:root {
+    --bg-1: #0f1419;
+    --bg-2: #141b22;
+    --panel: rgba(255, 255, 255, 0.06);
+    --panel-strong: rgba(255, 255, 255, 0.10);
+    --border: rgba(255, 255, 255, 0.12);
+    --text: #f3f6fb;
+    --muted: #c3ccd6;
+    --accent: #ffb703;  /* amber */
+    --accent-2: #219ebc; /* deep cyan */
+    --shadow: 0 24px 70px rgba(0, 0, 0, 0.45);
+}
 
-* {font-family: 'Readex Pro';}
+* {
+    font-family: 'DM Sans', sans-serif;
+}
 
+html, body, .stApp {
+    color: var(--text) !important;
+    background:
+        radial-gradient(900px 600px at 10% -10%, #233042 0%, transparent 55%),
+        radial-gradient(800px 520px at 100% 0%, #102a2e 0%, transparent 50%),
+        linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 100%) !important;
+}
 
+/* Layout container */
+div.block-container {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+    max-width: 1100px;
+}
+
+/* Headings */
+h1, h2, h3 {
+    font-family: 'Fraunces', serif;
+    letter-spacing: 0.3px;
+}
+
+h1 {
+    font-size: 3rem !important;
+    line-height: 1.05;
+    margin-bottom: 0.4rem;
+}
+
+h2, h3 {
+    color: #e9eef6 !important;
+}
+
+p, li, span {
+    color: var(--text) !important;
+}
+
+/* Muted text for descriptions */
+section [data-testid="stMarkdownContainer"] p {
+    color: var(--muted) !important;
+    font-size: 1rem;
+    line-height: 1.65;
+}
+
+/* Links */
 a {
     text-decoration: none;
-    color: white !important;
-    font-weight: 500;
-}
-
-/* main.css */
-.stDownloadButton button {
-    background-color: #2563eb; /* blue */
-    color: #fff; /* white text */
-    font-weight: bold;
-    border-radius: 5px;
-}
-.stDownloadButton button:hover {
-    background-color: #1e40af; /* darker blue on hover */
+    color: var(--accent-2) !important;
+    font-weight: 700;
 }
 
 a:hover {
-    color: #d33682 !important;
+    color: var(--accent) !important;
     text-decoration: none;
 }
 
-ul {list-style-type: none;}
+/* Buttons */
+.stDownloadButton button {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    color: #0b1016;
+    font-weight: 800;
+    border: 0;
+    border-radius: 12px;
+    padding: 0.65rem 1.25rem;
+    box-shadow: var(--shadow);
+}
 
+.stDownloadButton button:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+}
+
+/* Cards / sections */
 hr {
-    margin-top: 0px;
-    margin-bottom: 5%;
+    border-color: var(--border);
+    margin: 1.6rem 0 1.9rem;
 }
-body, .stApp {
-    background-color: #181818 !important;
-    color: #ffffff !important;
+
+section {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(6px);
 }
+
+/* Column spacing */
+[data-testid="stHorizontalBlock"] {
+    gap: 1.5rem;
+}
+
+/* Lists */
+ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+ul li {
+    padding: 0.25rem 0;
+}
+
+/* Avatar image */
+img {
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+/* Subtle reveal animation */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+section, img, .stDownloadButton {
+    animation: fadeUp 0.6s ease both;
+}
+
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
