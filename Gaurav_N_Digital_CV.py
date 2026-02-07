@@ -1,7 +1,6 @@
 from pathlib import Path
 import streamlit as st
 from PIL import Image
-import base64
 import time
 from datetime import date
 
@@ -226,16 +225,6 @@ for name, desc, link in project_cards:
     if link:
         st.markdown(f"[{link}]({link})")
     st.write("")
-
-
-# --- RESUME PREVIEW ---
-st.write('\n')
-st.subheader("Resume Preview")
-base64_pdf = base64.b64encode(PDFbyte).decode("utf-8")
-pdf_display = f"""
-<iframe src="data:application/pdf;base64,{base64_pdf}" width="100%" height="600" style="border: none;"></iframe>
-"""
-st.markdown(pdf_display, unsafe_allow_html=True)
 
 
 # --- Projects & Accomplishments ---
