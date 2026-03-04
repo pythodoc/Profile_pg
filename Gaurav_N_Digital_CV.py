@@ -210,7 +210,7 @@ st.write(
 
 # --- SELECTED PROJECTS ---
 st.write('\n')
-st.subheader(""Projects & Accomplishments"")
+st.subheader("Projects & Accomplishments")
 st.write("---")
 
 project_cards = [
@@ -238,4 +238,5 @@ for name, desc, link in project_cards:
 #         st.write(f"[{project}]({link})")
 #     else:
 #         st.write(f"{project} — {link}")
+
 
