@@ -210,11 +210,12 @@ st.write(
 
 # --- SELECTED PROJECTS ---
 st.write('\n')
-st.subheader("Selected Projects")
+st.subheader(""Projects & Accomplishments"")
 st.write("---")
 
 project_cards = [
-    ("GreekSoft API Python Package", "REST + WebSocket client for live market data, auth, and order execution.", "https://pypi.org/project/greeksoft/"),
+    ("Paramount Holidayz", "Website Based on Python+Django Framework, for accelerate Marketing of Holiday Plans and provide zero hassle services customers", "https://paramountholidayz.com/"),
+    ("GreekSoft API Python Module Package", "REST + WebSocket client for live market data, auth, and order execution.", "https://pypi.org/project/greeksoft/"),
     ("Database Keyword Search", "Internal tool for fast discovery across structured datasets.", None),
     ("Email Ticket Tracking", "Workflow automation for issue capture, triage, and tracking.", None),
     ("Temple Website", "Custom Streamlit site with content management and responsive UI.", "https://omshivgorakshayogiasthana.streamlit.app/")
@@ -227,13 +228,14 @@ for name, desc, link in project_cards:
     st.write("")
 
 
-# --- Projects & Accomplishments ---
-st.write('\n')
-st.subheader("Projects & Accomplishments")
-st.write("---")
-for project, link in PROJECTS.items():
-    # st.write(f"[{project}]({link})")
-    if link.startswith("http"):
-        st.write(f"[{project}]({link})")
-    else:
-        st.write(f"{project} — {link}")
+# # --- Projects & Accomplishments ---
+# st.write('\n')
+# st.subheader("Projects & Accomplishments")
+# st.write("---")
+# for project, link in PROJECTS.items():
+#     # st.write(f"[{project}]({link})")
+#     if link.startswith("http"):
+#         st.write(f"[{project}]({link})")
+#     else:
+#         st.write(f"{project} — {link}")
+
