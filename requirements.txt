@@ -1,5 +1,12 @@
-# The platform builds this on Python 3.14, and Streamlit 1.47 pins pillow<12 —
-# so the app carries no image dependency at all: the avatar is pre-rendered to
-# assets/profile-360.jpg. Do not add Pillow here; regenerate the avatar locally
-# with tools/make_avatar.py (that tool needs Pillow, the deployed app does not).
-streamlit>=1.49,<1.52
+# Pinned because the platform builds on Python 3.14.
+#
+# History: streamlit 1.51 caps pyarrow<22, and pyarrow 21.0.0 ships no cp314
+# wheel — so pip falls back to building it from source, which fails on the
+# builder ("cmake: No such file or directory"). streamlit 1.66 allows
+# pyarrow<27, and pyarrow 26 ships cp314 wheels.
+streamlit==1.66.1
+pyarrow==26.0.0
+
+# No Pillow on purpose: the avatar is pre-rendered to assets/profile-360.jpg.
+# Regenerate it locally with tools/make_avatar.py (that script needs Pillow;
+# the deployed app does not).
