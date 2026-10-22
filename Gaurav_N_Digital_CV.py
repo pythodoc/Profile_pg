@@ -1,242 +1,301 @@
+"""Gaurav Nazare — Digital CV (Streamlit).
+
+Single-page professional profile. Copy and data live in content.py,
+presentation in main.css, markup builders here.
+
+    streamlit run Gaurav_N_Digital_CV.py
+"""
+
+from __future__ import annotations
+
+import base64
+import io
+import textwrap
+from datetime import date
 from pathlib import Path
+from urllib.parse import quote
+
 import streamlit as st
 from PIL import Image
-import time
-from datetime import date
 
-if "last_rerun" not in st.session_state:
-    st.session_state.last_rerun = time.time()
+import content as C
 
-if time.time() - st.session_state.last_rerun > 60:
-    st.session_state.last_rerun = time.time()
-    st.experimental_rerun()
+BASE_DIR = Path(__file__).parent
+CSS_FILE = BASE_DIR / "main.css"
 
-
-def _months_between(start: date, end: date) -> int:
-    return (end.year - start.year) * 12 + (end.month - start.month)
-
-
-def format_tenure(start: date, end: date) -> str:
-    """Return tenure string like '1 year 5 months'."""
-    months = max(0, _months_between(start, end))
-    years, rem = divmod(months, 12)
-    parts = []
-    if years:
-        parts.append(f"{years} year" + ("s" if years != 1 else ""))
-    if rem:
-        parts.append(f"{rem} month" + ("s" if rem != 1 else ""))
-    if not parts:
-        return "0 months"
-    return " ".join(parts)
-
-
-# --- PATH SETTINGS ---
-current_dir = Path(__file__).parent if "__file__" in locals() else Path.cwd()
-
-css_file = current_dir / "main.css"
-
-resume_file = current_dir / "CV.pdf"
-
-profile_pic = current_dir / "gaurav profile_pic1.PNG"
-
-
-# --- GENERAL SETTINGS ---
-JR_ROLE_START = date(2024, 9, 1)
-INTERN_ROLE_START = date(2024, 7, 1)
-INTERN_ROLE_END = date(2024, 9, 1)
-PAGE_TITLE = "Digital CV | Gaurav Nazare"
-PAGE_ICON = ":briefcase:"
-NAME = "Gaurav Nazare"
-DESCRIPTION = """
-Software Engineer focused on building reliable trading systems and high-quality data services.
-"""
-EMAIL = "gauravnazare214@gmail.com"
-SOCIAL_MEDIA = {
-    "LinkedIn": "https://www.linkedin.com/in/gaurav-nazare-bkt9741/",
-    "GitHub": "https://github.com/pythodoc",
-}
-PROJECTS = {
-    "GreekSoft API Python Library Package": "https://pypi.org/project/greeksoft/",
-    "Database Keyword Search Application": "Deployed within organization",
-    "Email Ticket Tracking System": "Deployed within organization",
-    "Temple Website - Custom Website hosted on Streamlit": "https://omshivgorakshayogiasthana.streamlit.app/",
-}
-
-
-st.set_page_config(page_title=PAGE_TITLE, page_icon=PAGE_ICON)
-
-
-# --- LOAD CSS, PDF & PROFIL PIC ---
-with open(css_file) as f:
-    st.markdown("<style>{}</style>".format(f.read()), unsafe_allow_html=True)
-with open(resume_file, "rb") as pdf_file:
-    PDFbyte = pdf_file.read()
-profile_pic = Image.open(profile_pic)
-
-
-# --- HERO SECTION ---
-col1, col2 = st.columns(2, gap="small")
-with col1:
-    st.image(profile_pic, width=230)
-    st.caption("Profile photo")
-
-with col2:
-    st.title(NAME)
-    st.write(DESCRIPTION)
-    st.download_button(
-        label="Download Resume",
-        data=PDFbyte,
-        file_name="Gaurav_N CV.pdf",
-        mime="application/octet-stream",
-    )
-    st.write(EMAIL)
-    st.write("Mumbai, MH")
-
-
-# --- SOCIAL LINKS ---
-st.write('\n')
-cols = st.columns(len(SOCIAL_MEDIA))
-icon_map = {
-    "LinkedIn": """<svg viewBox='0 0 24 24' width='18' height='18' fill='currentColor' aria-hidden='true'>
-<path d='M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM0.5 8h4V24h-4V8zm7.5 0h3.8v2.2h.06c.53-1 1.83-2.2 3.77-2.2 4.03 0 4.77 2.65 4.77 6.1V24h-4v-7.6c0-1.81-.03-4.14-2.52-4.14-2.52 0-2.9 1.97-2.9 4.01V24h-4V8z'/>
-</svg>""",
-    "GitHub": """<svg viewBox='0 0 24 24' width='18' height='18' fill='currentColor' aria-hidden='true'>
-<path d='M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.23 1.84 1.23 1.07 1.84 2.8 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23.96-.27 1.99-.4 3.01-.4 1.02 0 2.05.14 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 1.24 3.22 0 4.61-2.8 5.62-5.47 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.22.69.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z'/>
-</svg>""",
-}
-
-for index, (platform, link) in enumerate(SOCIAL_MEDIA.items()):
-    icon = icon_map.get(platform, "")
-    cols[index].markdown(
-        f"<a href='{link}' target='_blank' style='display:inline-flex; align-items:center; gap:8px;'>"
-        f"{icon}<span>{platform}</span></a>",
-        unsafe_allow_html=True,
-    )
-
-
-# --- EXPERIENCE & QUALIFICATIONS ---
-# Dynamic tenure since current role start
-tenure_now = format_tenure(JR_ROLE_START, date.today())
-intern_tenure = format_tenure(INTERN_ROLE_START, INTERN_ROLE_END)
-# Total experience including internship
-total_tenure = format_tenure(INTERN_ROLE_START, date.today())
-
-st.write('\n')
-st.subheader("Experience & Qualifications")
-st.write(
-    f"""
-- {total_tenure} of overall experience (including internship) delivering data-driven solutions
-- Python engineering across ETL, APIs, and analytics workflows for reliable, fast systems
-- Data engineering focus on performance, automation, and scalable pipelines
-- Data analysis with statistical rigor to convert data into actionable insights
-"""
-)
-
-
-# --- CORE COMPETENCIES ---
-st.write('\n')
-st.subheader("Core Competencies")
-st.write(
-    """
-- Trading systems development and automation
-- REST API design, integration, and maintenance
-- Data processing pipelines and analytics
-- Dashboarding and stakeholder reporting
-"""
-)
-
-
-# --- SKILLS ---
-st.write('\n')
-st.subheader("Hard Skills")
-skills = [
-    "Python", "Pandas", "NumPy", "REST APIs", "Django REST Framework",
-    "Streamlit", "Gradio", "Plotly", "SQL", "PostgreSQL", "MongoDB", "MySQL"
+CV_CANDIDATES = [BASE_DIR / "CV.pdf", BASE_DIR / "Gaurav_Nazare_CV.pdf"]
+# assets/profile.png is the curated, headroom-corrected crop — prefer it over the
+# raw camera file, which is framed too tight for a circular mask.
+PIC_CANDIDATES = [
+    BASE_DIR / "assets" / "profile.png",
+    BASE_DIR / "gaurav profile_pic1.PNG",
+    BASE_DIR / "profile.png",
+    BASE_DIR / "assets" / "profile.jpg",
 ]
-cols = st.columns(4)
-for i, skill in enumerate(skills):
-    cols[i % 4].markdown(
-        f"<span style='display:inline-block; padding:6px 10px; margin:4px 0; "
-        f"border:1px solid rgba(255,255,255,0.15); border-radius:999px; '>{skill}</span>",
-        unsafe_allow_html=True,
+
+
+# --------------------------------------------------------------------------
+# assets
+# --------------------------------------------------------------------------
+def first_existing(paths: list[Path]) -> Path | None:
+    return next((p for p in paths if p.is_file()), None)
+
+
+@st.cache_data(show_spinner=False, max_entries=4)
+def avatar_data_uri(path_str: str, size: int = 360) -> str:
+    """Inline the portrait as a compact JPEG data URI (one HTML block, no layout gap)."""
+    img = Image.open(path_str).convert("RGB")
+    side = min(img.size)
+    left = (img.width - side) // 2
+    # bias the crop upward so the face sits on the optical centre
+    top = max(0, (img.height - side) // 2 - int(side * 0.06))
+    img = img.crop((left, top, left + side, min(top + side, img.height)))
+    img = img.resize((size, size), Image.LANCZOS)
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=86, optimize=True)
+    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+
+
+def initials_avatar(name: str) -> str:
+    """Fallback avatar so a missing photo degrades gracefully instead of breaking."""
+    initials = "".join(part[0] for part in name.split()[:2]).upper()
+    svg = textwrap.dedent(
+        f"""<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360">
+        <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#1f8f6b"/><stop offset="1" stop-color="#2f5bd0"/>
+        </linearGradient></defs>
+        <rect width="360" height="360" fill="url(#g)"/>
+        <text x="50%" y="50%" dy=".35em" text-anchor="middle" font-family="Inter,Arial"
+        font-size="140" font-weight="700" fill="#ffffff">{initials}</text></svg>"""
+    ).replace("\n", "").replace("  ", "")
+    return "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+
+
+# --------------------------------------------------------------------------
+# icons
+# --------------------------------------------------------------------------
+_ICON_ATTRS = 'width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"'
+ICONS = {
+    "chart": f'<svg viewBox="0 0 24 24" {_ICON_ATTRS}><path d="M3 20h18"/><path d="M6 16V9"/>'
+             '<path d="M11 16V5"/><path d="M16 16v-4"/></svg>',
+    "api": f'<svg viewBox="0 0 24 24" {_ICON_ATTRS}><path d="M8 7a4 4 0 0 1 8 0"/>'
+           '<rect x="3" y="7" width="18" height="13" rx="3"/><path d="M12 12v3"/></svg>',
+    "board": f'<svg viewBox="0 0 24 24" {_ICON_ATTRS}><rect x="3" y="4" width="18" height="16" rx="2"/>'
+             '<path d="M3 10h18"/><path d="M9 10v10"/></svg>',
+}
+
+_SMALL = 'width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"'
+ICON_MAIL = f'<svg viewBox="0 0 24 24" {_SMALL}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>'
+ICON_LINK = f'<svg viewBox="0 0 24 24" {_SMALL}><path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l1-1"/></svg>'
+ICON_GH = ('<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M12 0C5.37 0 0 '
+           '5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58 0-.29-.01-1.05-.02-2.06-3.34.73-4.04'
+           '-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.23 1.84 '
+           '1.23 1.07 1.84 2.8 1.31 3.49 1 .11-.78.42-1.31.76-1.61-2.66-.3-5.46-1.33-5.46-5.93 0-1.31'
+           '.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.17 0 0 1.01-.32 3.3 1.23.96-.27 1.99-.4 3.01-.4 '
+           '1.02 0 2.05.14 3.01.4 2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.87.12 3.17.77.84 1.24 1.91 '
+           '1.24 3.22 0 4.61-2.8 5.62-5.47 5.92.43.37.81 1.1.81 2.22 0 1.6-.01 2.89-.01 3.28 0 .32.22'
+           '.69.82.58C20.56 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>')
+ICON_LI = ('<svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 '
+           '3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8h4v16h-4V8zm7.5 0h3.8v2.2h.06'
+           'c.53-1 1.83-2.2 3.77-2.2 4.03 0 4.77 2.65 4.77 6.1V24h-4v-7.6c0-1.81-.03-4.14-2.52-4.14-2.52 '
+           '0-2.9 1.97-2.9 4.01V24h-4V8z"/></svg>')
+
+
+# --------------------------------------------------------------------------
+# markup builders
+# --------------------------------------------------------------------------
+def section(title: str, body: str, note: str = "") -> str:
+    note_html = f'<span class="gn-section-note">{note}</span>' if note else ""
+    return (
+        f'<section class="gn-section"><div class="gn-section-head">'
+        f'<h2 class="gn-section-title">{title}</h2>{note_html}</div>{body}</section>'
     )
 
 
-# --- KEY ACHIEVEMENTS ---
-st.write('\n')
-st.subheader("Key Achievements")
-st.write(
-    """
-- Delivered reusable trading tools that improved strategy testing turnaround
-- Built real-time dashboards for signal tracking and decision support
-- Contributed to API refactoring for cleaner integrations and stability
-"""
-)
+def hero(avatar_uri: str) -> str:
+    chips = "".join(
+        [
+            f'<span class="gn-chip gn-chip-live"><span class="gn-dot"></span>{C.AVAILABILITY}</span>',
+            f'<span class="gn-chip">{C.LOCATION}</span>',
+            f'<span class="gn-chip"><b>{C.human_tenure(C.engineering_months())}</b> in engineering</span>',
+            f'<span class="gn-chip">{C.EMAIL}</span>',
+        ]
+    )
+    return (
+        '<header class="gn-hero"><div class="gn-hero-grid">'
+        '<div class="gn-avatar-wrap"><div class="gn-avatar-halo"></div>'
+        f'<img class="gn-avatar" src="{avatar_uri}" alt="Portrait of {C.NAME}"></div>'
+        "<div>"
+        f'<span class="gn-eyebrow">{C.ROLE}</span>'
+        f'<h1 class="gn-name">{C.NAME}</h1>'
+        f'<p class="gn-lead">{C.LEAD}</p>'
+        f'<div class="gn-chips">{chips}</div>'
+        "</div></div></header>"
+    )
 
 
-# --- WORK HISTORY ---
-st.write('\n')
-st.subheader("Work History")
-st.write("---")
-
-# --- JOB 1
-st.write("**Software Engineer | Silverstream Equities Pvt Ltd**")
-st.write("09/2024 - Present")
-st.write(
-    """
-- Implemented custom trading logic using Pandas and NumPy for analysis, signal generation,
-  and strategy backtesting on historical market data.
-- Built interactive dashboards with Streamlit and Gradio to visualize market trends,
-  display trading signals, and simulate trades in real time.
-- Developing and maintaining the GreekSoft API Python package, providing RESTful and
-  WebSocket-based interfaces for authentication, live data processing, and order execution.
-- Contributing to ongoing refactoring and the transition to GreekSoft CTCL to ensure
-  compatibility with evolving trading infrastructure.
-"""
-)
-
-# --- JOB 2
-st.write('\n')
-st.write("**Intern Python Developer | Silverstream Equities Pvt Ltd**")
-st.write(f"07/2024 - 09/2024 ({intern_tenure})")
-st.write(
-    """
-- Built backtesting models on historical market data to evaluate trading strategy performance.
-- Integrated models into Streamlit applications for visual analysis and simulated decision-making.
-- Developed foundations in financial market structure, order flow, and trading logic.
-"""
-)
+def stats() -> str:
+    items = [
+        (f"{C.years_experience()}+", "Years in tech"),
+        (str(len(C.PROJECTS)), "Projects shipped"),
+        ("700+", "Devices managed"),
+        ("1", "PyPI package"),
+    ]
+    body = "".join(
+        f'<div class="gn-stat"><div class="gn-stat-value">{v}</div>'
+        f'<div class="gn-stat-label">{k}</div></div>'
+        for v, k in items
+    )
+    return f'<div class="gn-stats">{body}</div>'
 
 
-# --- SELECTED PROJECTS ---
-st.write('\n')
-st.subheader("Projects & Accomplishments")
-st.write("---")
-
-project_cards = [
-    ("Paramount Holidayz", "Website Based on Python+Django Framework, for accelerate Marketing of Holiday Plans and provide zero hassle services customers", "https://paramountholidayz.com/"),
-    ("GreekSoft API Python Module Package", "REST + WebSocket client for live market data, auth, and order execution.", "https://pypi.org/project/greeksoft/"),
-    ("Database Keyword Search", "Internal tool for fast discovery across structured datasets.", None),
-    ("Email Ticket Tracking", "Workflow automation for issue capture, triage, and tracking.", None),
-    ("Temple Website", "Custom Streamlit site with content management and responsive UI.", "https://omshivgorakshayogiasthana.streamlit.app/")
-]
-for name, desc, link in project_cards:
-    st.markdown(f"**{name}**")
-    st.write(desc)
-    if link:
-        st.markdown(f"[{link}]({link})")
-    st.write("")
+def focus() -> str:
+    cards = "".join(
+        f'<div class="gn-focus-card"><div class="gn-focus-icon">{ICONS.get(c["icon"], "")}</div>'
+        f'<div class="gn-focus-title">{c["title"]}</div>'
+        f'<p class="gn-focus-text">{c["text"]}</p></div>'
+        for c in C.FOCUS
+    )
+    return f'<div class="gn-focus">{cards}</div>'
 
 
-# # --- Projects & Accomplishments ---
-# st.write('\n')
-# st.subheader("Projects & Accomplishments")
-# st.write("---")
-# for project, link in PROJECTS.items():
-#     # st.write(f"[{project}]({link})")
-#     if link.startswith("http"):
-#         st.write(f"[{project}]({link})")
-#     else:
-#         st.write(f"{project} — {link}")
+def experience(today: date) -> str:
+    items = []
+    for job in C.EXPERIENCE:
+        end = job["end"] or today
+        tenure = C.human_tenure(C.months_between(job["start"], end))
+        if job["current"]:
+            dates = f'{job["start"]:%b %Y} — Present · {tenure}'
+            badge = '<span class="gn-badge is-live">Current</span>'
+        else:
+            dates = f'{job["start"]:%b %Y} — {job["end"]:%b %Y} · {tenure}'
+            badge = ""
+
+        bullets = "".join(f"<li>{b}</li>" for b in job["bullets"])
+        tags = "".join(f'<span class="gn-tag">{t}</span>' for t in job["tags"])
+        items.append(
+            f'<article class="gn-job{" is-current" if job["current"] else ""}">'
+            f'<div class="gn-job-top"><h3 class="gn-role">{job["role"]} '
+            f'<span>· {job["company"]}</span></h3><div class="gn-badges">{badge}</div></div>'
+            f'<p class="gn-dates">{dates}</p>'
+            f'<ul class="gn-bullets">{bullets}</ul>'
+            f'<div class="gn-tags">{tags}</div></article>'
+        )
+    return f'<div class="gn-timeline">{"".join(items)}</div>'
 
 
+def projects() -> str:
+    cards = []
+    for p in C.PROJECTS:
+        flag = f'<span class="gn-project-flag">{p["flag"]}</span>' if p.get("flag") else ""
+        if p.get("url"):
+            link = f'<a class="gn-project-link" href="{p["url"]}" target="_blank" rel="noopener">Visit ↗</a>'
+        else:
+            link = '<span class="gn-project-stack">Shipped internally</span>'
+        metric = f'<div class="gn-project-metric">{p["metric"]}</div>' if p.get("metric") else ""
+        cards.append(
+            '<article class="gn-project">'
+            f'<div class="gn-project-head"><h3 class="gn-project-title">{p["name"]}</h3>{flag}</div>'
+            f'<p class="gn-project-desc">{p["desc"]}</p>'
+            f"{metric}"
+            f'<div class="gn-project-foot">{link}'
+            f'<span class="gn-project-stack">{p["stack"]}</span></div></article>'
+        )
+    return f'<div class="gn-projects">{"".join(cards)}</div>'
+
+
+def skills() -> str:
+    groups = "".join(
+        f'<div class="gn-skill-group"><h4>{group}</h4><div class="gn-pills">'
+        + "".join(f'<span class="gn-pill">{s}</span>' for s in items)
+        + "</div></div>"
+        for group, items in C.SKILLS.items()
+    )
+    return f'<div class="gn-skills">{groups}</div>'
+
+
+def wins() -> str:
+    cards = "".join(
+        f'<div class="gn-win"><div class="gn-win-mark">0{i + 1}</div>'
+        f'<p class="gn-win-text">{w}</p></div>'
+        for i, w in enumerate(C.WINS)
+    )
+    return f'<div class="gn-wins">{cards}</div>'
+
+
+def contact() -> str:
+    mail_subject = quote("Let's talk — software engineering role")
+    return (
+        '<section class="gn-contact">'
+        "<h3>Let’s build something reliable.</h3>"
+        "<p>Open to software engineering roles across trading systems, data platforms and backend "
+        "engineering — Mumbai or remote.</p>"
+        '<div class="gn-contact-links">'
+        f'<a href="mailto:{C.EMAIL}?subject={mail_subject}">{ICON_MAIL}{C.EMAIL}</a>'
+        f'<a href="{C.SOCIALS["LinkedIn"]}" target="_blank" rel="noopener">{ICON_LI}LinkedIn</a>'
+        f'<a href="{C.SOCIALS["GitHub"]}" target="_blank" rel="noopener">{ICON_GH}GitHub</a>'
+        "</div></section>"
+    )
+
+
+# --------------------------------------------------------------------------
+# page
+# --------------------------------------------------------------------------
+def main() -> None:
+    st.set_page_config(
+        page_title=C.PAGE_TITLE,
+        page_icon=C.PAGE_ICON,
+        layout="wide",
+        initial_sidebar_state="collapsed",
+    )
+
+    if CSS_FILE.is_file():
+        st.markdown(f"<style>{CSS_FILE.read_text(encoding='utf-8')}</style>", unsafe_allow_html=True)
+
+    today = date.today()
+
+    pic = first_existing(PIC_CANDIDATES)
+    avatar_uri = avatar_data_uri(str(pic)) if pic else initials_avatar(C.NAME)
+
+    st.markdown(hero(avatar_uri), unsafe_allow_html=True)
+
+    # Action row — native controls so the CV download works and analytics count.
+    cv = first_existing(CV_CANDIDATES)
+    with st.container(key="actions"):
+        col_cv, col_mail, col_li, col_gh = st.columns(
+            [1, 1, 1, 1], gap="small", vertical_alignment="center"
+        )
+        with col_cv:
+            if cv:
+                st.download_button(
+                    ":material/download:  Download CV",
+                    data=cv.read_bytes(),
+                    file_name="Gaurav_Nazare_CV.pdf",
+                    mime="application/pdf",
+                    use_container_width=True,
+                )
+            else:
+                st.link_button(":material/mail:  Request CV",
+                               f"mailto:{C.EMAIL}?subject=CV%20request", use_container_width=True)
+        with col_mail:
+            st.link_button("Email", f"mailto:{C.EMAIL}", use_container_width=True)
+        with col_li:
+            st.link_button("LinkedIn", C.SOCIALS["LinkedIn"], use_container_width=True)
+        with col_gh:
+            st.link_button("GitHub", C.SOCIALS["GitHub"], use_container_width=True)
+
+    st.markdown(stats(), unsafe_allow_html=True)
+    st.markdown(section("What I focus on", focus()), unsafe_allow_html=True)
+    st.markdown(section("Experience", experience(today), "tenure updates automatically"),
+                unsafe_allow_html=True)
+    st.markdown(section("Selected projects", projects(), f"{len(C.PROJECTS)} shipped"),
+                unsafe_allow_html=True)
+    st.markdown(section("Toolkit", skills()), unsafe_allow_html=True)
+    st.markdown(section("Key achievements", wins()), unsafe_allow_html=True)
+    st.markdown(contact(), unsafe_allow_html=True)
+    st.markdown(f'<p class="gn-footer">© {today.year} {C.NAME} · Built with Streamlit</p>',
+                unsafe_allow_html=True)
+
+
+if __name__ == "__main__":
+    main()

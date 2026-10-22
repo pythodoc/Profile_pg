@@ -1,0 +1,24 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Streamlit
+.streamlit/secrets.toml
+
+# Local artifacts
+shots/
+*.log
+.tmp/
+.pytest_tmp/
+pytest-cache-files-*/
+
+# OS
+.DS_Store
+Thumbs.db
