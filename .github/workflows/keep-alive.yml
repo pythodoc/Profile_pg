@@ -1,0 +1,32 @@
+name: keep-alive
+
+# Streamlit Community Cloud sleeps an app after a stretch without traffic,
+# which makes the first visit from a recruiter a 30-60s cold start. A tiny
+# request every 10 minutes keeps the container warm.
+#
+# Note: GitHub disables scheduled workflows after 60 days without repo
+# activity. The `workflow_dispatch` trigger below lets you run it by hand,
+# and any push re-enables the schedule.
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: keep-alive
+  cancel-in-progress: false
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Wake the app
+        run: curl -sS -o /dev/null -w "wake: %{http_code} in %{time_total}s\n" \
+             --max-time 90 --retry 2 --retry-delay 5 \
+             "https://gauravnazare.streamlit.app/"
+
+      - name: Confirm it is serving
+        run: sleep 25 && curl -sS -o /dev/null -w "check: %{http_code} in %{time_total}s\n" \
+             --max-time 60 "https://gauravnazare.streamlit.app/"
