@@ -44,8 +44,9 @@ prevent sleep — see [Keeping the app awake](#keeping-the-app-awake).
 - **Content/data separation** — all copy lives in `content.py`; `Gaurav_N_Digital_CV.py` only renders.
 - **Derived metadata** — tenure badges, "years experience" and "core technologies" counts are computed, so they cannot drift from reality.
 - **Graceful degradation** — missing photo falls back to a generated initials avatar; missing CV swaps the download button for a "Request CV" mailto.
+- **No runtime image dependency** — Streamlit 1.47 pins `pillow<12` while the platform runs Python 3.14, so the avatar is pre-rendered instead of processed at boot.
 - **Accessibility** — semantic `<header>`/`<section>`/`<article>`, `alt` text, visible focus rings from the theme, 44px+ tap targets, `prefers-reduced-motion` honoured.
-- **Performance** — portrait inlined as a ~30KB JPEG data URI (no extra request, no layout shift); no JS beyond Streamlit's runtime.
+- **Performance** — portrait inlined as a ~13KB JPEG data URI (no extra request, no layout shift); no image library at runtime.
 - **Tested helpers** — `pytest` suite covering tenure maths and content integrity.
 
 ---
@@ -61,7 +62,8 @@ prevent sleep — see [Keeping the app awake](#keeping-the-app-awake).
 │   └── config.toml            # dark theme, toolbar hidden, XSRF/CORS on
 ├── .github/workflows/
 │   └── keep-alive.yml         # 10-minute warm-up ping
-├── assets/profile.png         # portrait, pre-cropped with headroom for the circle
+├── assets/profile-360.jpg     # portrait: pre-cropped, pre-sized (~13KB)
+├── tools/make_avatar.py       # regenerates the crop (dev-only, needs Pillow)
 ├── tests/
 │   ├── conftest.py
 │   ├── test_app.py            # renders the page headless (Streamlit AppTest)

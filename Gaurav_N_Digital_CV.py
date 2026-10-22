@@ -9,14 +9,13 @@ presentation in main.css, markup builders here.
 from __future__ import annotations
 
 import base64
-import io
+import inspect
 import textwrap
 from datetime import date
 from pathlib import Path
 from urllib.parse import quote
 
 import streamlit as st
-from PIL import Image
 
 import content as C
 
@@ -24,13 +23,14 @@ BASE_DIR = Path(__file__).parent
 CSS_FILE = BASE_DIR / "main.css"
 
 CV_CANDIDATES = [BASE_DIR / "CV.pdf", BASE_DIR / "Gaurav_Nazare_CV.pdf"]
-# assets/profile.png is the curated, headroom-corrected crop — prefer it over the
-# raw camera file, which is framed too tight for a circular mask.
+# assets/profile-360.jpg is the curated, headroom-corrected crop, pre-sized to
+# 360px (~13KB) so the deployed app needs no image library at all. Regenerate it
+# with tools/make_avatar.py if the portrait changes.
 PIC_CANDIDATES = [
+    BASE_DIR / "assets" / "profile-360.jpg",
     BASE_DIR / "assets" / "profile.png",
     BASE_DIR / "gaurav profile_pic1.PNG",
     BASE_DIR / "profile.png",
-    BASE_DIR / "assets" / "profile.jpg",
 ]
 
 
@@ -42,18 +42,31 @@ def first_existing(paths: list[Path]) -> Path | None:
 
 
 @st.cache_data(show_spinner=False, max_entries=4)
-def avatar_data_uri(path_str: str, size: int = 360) -> str:
-    """Inline the portrait as a compact JPEG data URI (one HTML block, no layout gap)."""
-    img = Image.open(path_str).convert("RGB")
-    side = min(img.size)
-    left = (img.width - side) // 2
-    # bias the crop upward so the face sits on the optical centre
-    top = max(0, (img.height - side) // 2 - int(side * 0.06))
-    img = img.crop((left, top, left + side, min(top + side, img.height)))
-    img = img.resize((size, size), Image.LANCZOS)
-    buf = io.BytesIO()
-    img.save(buf, format="JPEG", quality=86, optimize=True)
-    return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+def avatar_data_uri(path_str: str) -> str:
+    """Inline the portrait as a data URI — one HTML block, no extra request.
+
+    The file is pre-cropped and pre-sized, so this is a plain read: the app
+    deliberately has no Pillow dependency (Streamlit 1.47 pins pillow<12,
+    and a runtime image library is dead weight for a static avatar).
+    """
+    path = Path(path_str)
+    mime = "image/jpeg" if path.suffix.lower() in {".jpg", ".jpeg"} else "image/png"
+    return f"data:{mime};base64," + base64.b64encode(path.read_bytes()).decode()
+
+
+def stretch_kwargs(func=None) -> dict:
+    """Full-width argument for whichever Streamlit build is running.
+
+    Streamlit 1.49 deprecated `use_container_width` in favour of
+    `width="stretch"`. Introspecting the button signature is more reliable than
+    parsing the version — this repo already got bitten by a version assumption.
+    """
+    target = st.download_button if func is None else func
+    try:
+        params = inspect.signature(target).parameters
+    except (TypeError, ValueError):
+        return {"use_container_width": True}
+    return {"width": "stretch"} if "width" in params else {"use_container_width": True}
 
 
 def initials_avatar(name: str) -> str:
@@ -272,17 +285,17 @@ def main() -> None:
                     data=cv.read_bytes(),
                     file_name="Gaurav_Nazare_CV.pdf",
                     mime="application/pdf",
-                    use_container_width=True,
+                    **stretch_kwargs(),
                 )
             else:
                 st.link_button(":material/mail:  Request CV",
-                               f"mailto:{C.EMAIL}?subject=CV%20request", use_container_width=True)
+                               f"mailto:{C.EMAIL}?subject=CV%20request", **stretch_kwargs())
         with col_mail:
-            st.link_button("Email", f"mailto:{C.EMAIL}", use_container_width=True)
+            st.link_button("Email", f"mailto:{C.EMAIL}", **stretch_kwargs())
         with col_li:
-            st.link_button("LinkedIn", C.SOCIALS["LinkedIn"], use_container_width=True)
+            st.link_button("LinkedIn", C.SOCIALS["LinkedIn"], **stretch_kwargs())
         with col_gh:
-            st.link_button("GitHub", C.SOCIALS["GitHub"], use_container_width=True)
+            st.link_button("GitHub", C.SOCIALS["GitHub"], **stretch_kwargs())
 
     st.markdown(stats(), unsafe_allow_html=True)
     st.markdown(section("What I focus on", focus()), unsafe_allow_html=True)

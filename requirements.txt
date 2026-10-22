@@ -1,2 +1,5 @@
-streamlit==1.47.1
-Pillow==12.3.0
+# The platform builds this on Python 3.14, and Streamlit 1.47 pins pillow<12 —
+# so the app carries no image dependency at all: the avatar is pre-rendered to
+# assets/profile-360.jpg. Do not add Pillow here; regenerate the avatar locally
+# with tools/make_avatar.py (that tool needs Pillow, the deployed app does not).
+streamlit>=1.49,<1.52
